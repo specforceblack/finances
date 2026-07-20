@@ -3,25 +3,27 @@
 }
 
 .entry-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  align-items: center;
+  gap: 8px 8px;
+  margin-bottom: 8px;
 
   mat-form-field {
-    margin-bottom: -1.25em;
+    width: 100%;
+  }
+
+  button {
+    align-self: center;
   }
 }
 
-.entry-name {
-  flex: 2 1 140px;
-}
-.entry-type {
-  flex: 1 1 120px;
-}
-.entry-date {
-  flex: 1 1 130px;
-}
-.entry-amount {
-  flex: 1 1 90px;
+@media (max-width: 640px) {
+  .entry-row {
+    grid-template-columns: 1fr 1fr;
+
+    .entry-name {
+      grid-column: 1 / -1;
+    }
+  }
 }

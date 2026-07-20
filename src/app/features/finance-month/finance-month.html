@@ -31,11 +31,11 @@
     }
     @for (entry of incomeEntries(); track entry.id) {
       <div class="entry-row">
-        <mat-form-field appearance="outline" class="entry-name">
+        <mat-form-field appearance="outline" class="entry-name" subscriptSizing="dynamic">
           <mat-label>Name</mat-label>
           <input matInput [value]="entry.name" (change)="updateEntryName(entry.id, $any($event.target).value)" />
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-type">
+        <mat-form-field appearance="outline" class="entry-type" subscriptSizing="dynamic">
           <mat-label>Type</mat-label>
           <mat-select [value]="entry.categoryId" (selectionChange)="updateEntryCategory(entry.id, $event.value)">
             @for (cat of incomeCategories(); track cat.id) {
@@ -43,11 +43,11 @@
             }
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-date">
+        <mat-form-field appearance="outline" class="entry-date" subscriptSizing="dynamic">
           <mat-label>Date</mat-label>
           <input matInput type="date" [value]="entry.date" (change)="updateEntryDate(entry.id, $any($event.target).value)" />
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-amount">
+        <mat-form-field appearance="outline" class="entry-amount" subscriptSizing="dynamic">
           <mat-label>Amount</mat-label>
           <input
             matInput
@@ -82,11 +82,11 @@
     }
     @for (entry of expenseEntries(); track entry.id) {
       <div class="entry-row">
-        <mat-form-field appearance="outline" class="entry-name">
+        <mat-form-field appearance="outline" class="entry-name" subscriptSizing="dynamic">
           <mat-label>Name</mat-label>
           <input matInput [value]="entry.name" (change)="updateEntryName(entry.id, $any($event.target).value)" />
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-type">
+        <mat-form-field appearance="outline" class="entry-type" subscriptSizing="dynamic">
           <mat-label>Type</mat-label>
           <mat-select [value]="entry.categoryId" (selectionChange)="updateEntryCategory(entry.id, $event.value)">
             @for (cat of expenseCategories(); track cat.id) {
@@ -94,11 +94,11 @@
             }
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-date">
+        <mat-form-field appearance="outline" class="entry-date" subscriptSizing="dynamic">
           <mat-label>Date</mat-label>
           <input matInput type="date" [value]="entry.date" (change)="updateEntryDate(entry.id, $any($event.target).value)" />
         </mat-form-field>
-        <mat-form-field appearance="outline" class="entry-amount">
+        <mat-form-field appearance="outline" class="entry-amount" subscriptSizing="dynamic">
           <mat-label>Amount</mat-label>
           <input
             matInput
