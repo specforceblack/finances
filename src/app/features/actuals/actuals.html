@@ -1,0 +1,16 @@
+<div class="page-wrap">
+  <div class="row-between wrap" style="margin-bottom: 12px">
+    <div class="row">
+      <button mat-icon-button (click)="prev()" aria-label="Previous month">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="strong" style="min-width: 160px; text-align: center">{{ monthLabel(selectedMonth()) }}</span>
+      <button mat-icon-button (click)="next()" aria-label="Next month">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    <button mat-stroked-button (click)="today()">This month</button>
+  </div>
+
+  <app-finance-month section="actuals" [monthKey]="selectedMonth()" />
+</div>

@@ -1,0 +1,66 @@
+<div class="metric-tiles">
+  <div class="metric-card">
+    <div class="big pos">{{ totals().income | number: '1.0-0' }}</div>
+    <div class="metric-label">Income</div>
+  </div>
+  <div class="metric-card">
+    <div class="big neg">{{ totals().expense | number: '1.0-0' }}</div>
+    <div class="metric-label">Outgoings</div>
+  </div>
+  <div class="metric-card">
+    <div class="big" [class.pos]="totals().net >= 0" [class.neg]="totals().net < 0">
+      {{ totals().net | number: '1.0-0' }}
+    </div>
+    <div class="metric-label">Net</div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="row-between">
+      <span class="strong">Income</span>
+    </div>
+    @if (incomeChart().labels?.length) {
+      <div style="height: 180px; margin: 12px 0">
+        <canvas baseChart type="doughnut" [data]="incomeChart()" [options]="doughnutOptions"></canvas>
+      </div>
+    }
+    @for (cat of incomeCategories(); track cat.id) {
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>{{ cat.name }}</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          inputmode="decimal"
+          [value]="amountFor(cat.id) || ''"
+          (change)="onAmountChange(cat.id, $any($event.target).value)"
+        />
+      </mat-form-field>
+    }
+  </div>
+
+  <div class="card">
+    <div class="row-between">
+      <span class="strong">Outgoings</span>
+    </div>
+    @if (expenseChart().labels?.length) {
+      <div style="height: 180px; margin: 12px 0">
+        <canvas baseChart type="doughnut" [data]="expenseChart()" [options]="doughnutOptions"></canvas>
+      </div>
+    }
+    @for (cat of expenseCategories(); track cat.id) {
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>{{ cat.name }}</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          inputmode="decimal"
+          [value]="amountFor(cat.id) || ''"
+          (change)="onAmountChange(cat.id, $any($event.target).value)"
+        />
+      </mat-form-field>
+    }
+  </div>
+</div>

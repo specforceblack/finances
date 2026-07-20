@@ -1,0 +1,25 @@
+@if (lock.locked()) {
+  <app-lock-screen />
+} @else {
+  <mat-toolbar class="header">
+    <span class="brand">Finances</span>
+    <nav class="row">
+      <a routerLink="/actuals" routerLinkActive="active">Actuals</a>
+      <a routerLink="/forecast" routerLinkActive="active">Forecast</a>
+    </nav>
+    <span class="spacer"></span>
+    <a routerLink="/settings" routerLinkActive="active" aria-label="Settings" class="icon-link">
+      <mat-icon>settings</mat-icon>
+    </a>
+    <button class="icon-btn" (click)="theme.toggle()" [attr.aria-label]="theme.dark() ? 'Light mode' : 'Dark mode'">
+      <mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+    @if (lock.hasPin()) {
+      <button class="icon-btn" (click)="lock.lock()" aria-label="Lock">
+        <mat-icon>lock</mat-icon>
+      </button>
+    }
+  </mat-toolbar>
+
+  <router-outlet />
+}

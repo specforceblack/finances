@@ -1,0 +1,97 @@
+<div class="page-wrap">
+  <div class="strong" style="margin-bottom: 4px">Categories</div>
+  <div class="tiny muted" style="margin-bottom: 16px">
+    Shared between Actuals and Forecast — editing a category here updates it everywhere.
+  </div>
+
+  <div class="card">
+    @for (cat of categories(); track cat.id) {
+      <div class="row" style="padding: 6px 0">
+        <input
+          type="color"
+          [value]="cat.color"
+          (change)="setColor(cat.id, $any($event.target).value)"
+          style="width: 28px; height: 28px; border: none; background: none; padding: 0"
+        />
+        <mat-form-field appearance="outline" style="flex: 1 1 auto; margin-bottom: -1.25em">
+          <input matInput [value]="cat.name" (change)="rename(cat.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width: 140px; margin-bottom: -1.25em">
+          <mat-select [value]="cat.type" (selectionChange)="setType(cat.id, $event.value)">
+            <mat-option value="income">Income</mat-option>
+            <mat-option value="expense">Expense</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-icon-button (click)="remove(cat.id)" aria-label="Delete category">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="card" style="margin-top: 16px">
+    <div class="strong" style="margin-bottom: 8px">Add category</div>
+    <div class="row wrap">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [ngModel]="newName()" (ngModelChange)="newName.set($event)" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 140px">
+        <mat-label>Type</mat-label>
+        <mat-select [ngModel]="newType()" (ngModelChange)="newType.set($event)">
+          <mat-option value="income">Income</mat-option>
+          <mat-option value="expense">Expense</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-flat-button (click)="add()">Add</button>
+    </div>
+  </div>
+
+  <div class="strong" style="margin: 28px 0 4px">Security</div>
+  <div class="tiny muted" style="margin-bottom: 16px">
+    A PIN is a light deterrent for a public URL, not real security — your data stays only in this browser either way.
+  </div>
+  <div class="card">
+    @if (lock.hasPin()) {
+      <div class="row-between">
+        <span>PIN lock is on.</span>
+        <button mat-stroked-button (click)="removePin()">Remove PIN</button>
+      </div>
+    } @else {
+      <div class="row wrap">
+        <mat-form-field appearance="outline">
+          <mat-label>New PIN</mat-label>
+          <input matInput type="password" inputmode="numeric" [ngModel]="pin1()" (ngModelChange)="pin1.set($event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm PIN</mat-label>
+          <input matInput type="password" inputmode="numeric" [ngModel]="pin2()" (ngModelChange)="pin2.set($event)" />
+        </mat-form-field>
+        <button mat-flat-button (click)="savePin()">Set PIN</button>
+      </div>
+      @if (pinError()) {
+        <div class="tiny neg" style="margin-top: 4px">{{ pinError() }}</div>
+      }
+    }
+  </div>
+
+  <div class="strong" style="margin: 28px 0 4px">Your data</div>
+  <div class="tiny muted" style="margin-bottom: 16px">
+    Everything is stored only in this browser. Export a backup and import it on another device (e.g. your phone) to
+    keep them in sync — there's no shared server.
+  </div>
+  <div class="card row wrap">
+    <button mat-stroked-button (click)="exportData()">
+      <mat-icon>download</mat-icon>
+      Export backup
+    </button>
+    <button mat-stroked-button (click)="fileInput.click()">
+      <mat-icon>upload</mat-icon>
+      Import backup
+    </button>
+    <input #fileInput type="file" accept="application/json" hidden (change)="onImportFile($event)" />
+  </div>
+  @if (importError()) {
+    <div class="tiny neg" style="margin-top: 4px">{{ importError() }}</div>
+  }
+</div>
