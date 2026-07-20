@@ -17,6 +17,7 @@ function defaultState(): FinanceState {
     ['Salary', 'income'],
     ['Other income', 'income'],
     ['Housing', 'expense'],
+    ['Repayments', 'expense'],
     ['Utilities', 'expense'],
     ['Groceries', 'expense'],
     ['Transport', 'expense'],
