@@ -19,48 +19,102 @@
   <div class="card">
     <div class="row-between">
       <span class="strong">Income</span>
+      <button mat-stroked-button (click)="addEntry('income')" [disabled]="!incomeCategories().length">
+        <mat-icon>add</mat-icon>
+        Add income
+      </button>
     </div>
     @if (incomeChart().labels?.length) {
       <div style="height: 180px; margin: 12px 0">
         <canvas baseChart type="doughnut" [data]="incomeChart()" [options]="doughnutOptions"></canvas>
       </div>
     }
-    @for (cat of incomeCategories(); track cat.id) {
-      <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>{{ cat.name }}</mat-label>
-        <input
-          matInput
-          type="number"
-          min="0"
-          inputmode="decimal"
-          [value]="amountFor(cat.id) || ''"
-          (change)="onAmountChange(cat.id, $any($event.target).value)"
-        />
-      </mat-form-field>
+    @for (entry of incomeEntries(); track entry.id) {
+      <div class="entry-row">
+        <mat-form-field appearance="outline" class="entry-name">
+          <mat-label>Name</mat-label>
+          <input matInput [value]="entry.name" (change)="updateEntryName(entry.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-type">
+          <mat-label>Type</mat-label>
+          <mat-select [value]="entry.categoryId" (selectionChange)="updateEntryCategory(entry.id, $event.value)">
+            @for (cat of incomeCategories(); track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-date">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [value]="entry.date" (change)="updateEntryDate(entry.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-amount">
+          <mat-label>Amount</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            inputmode="decimal"
+            [value]="entry.amount || ''"
+            (change)="updateEntryAmount(entry.id, $any($event.target).value)"
+          />
+        </mat-form-field>
+        <button mat-icon-button (click)="removeEntry(entry.id)" aria-label="Remove">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    } @empty {
+      <div class="tiny muted">No income entries yet.</div>
     }
   </div>
 
   <div class="card">
     <div class="row-between">
       <span class="strong">Outgoings</span>
+      <button mat-stroked-button (click)="addEntry('expense')" [disabled]="!expenseCategories().length">
+        <mat-icon>add</mat-icon>
+        Add outgoing
+      </button>
     </div>
     @if (expenseChart().labels?.length) {
       <div style="height: 180px; margin: 12px 0">
         <canvas baseChart type="doughnut" [data]="expenseChart()" [options]="doughnutOptions"></canvas>
       </div>
     }
-    @for (cat of expenseCategories(); track cat.id) {
-      <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>{{ cat.name }}</mat-label>
-        <input
-          matInput
-          type="number"
-          min="0"
-          inputmode="decimal"
-          [value]="amountFor(cat.id) || ''"
-          (change)="onAmountChange(cat.id, $any($event.target).value)"
-        />
-      </mat-form-field>
+    @for (entry of expenseEntries(); track entry.id) {
+      <div class="entry-row">
+        <mat-form-field appearance="outline" class="entry-name">
+          <mat-label>Name</mat-label>
+          <input matInput [value]="entry.name" (change)="updateEntryName(entry.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-type">
+          <mat-label>Type</mat-label>
+          <mat-select [value]="entry.categoryId" (selectionChange)="updateEntryCategory(entry.id, $event.value)">
+            @for (cat of expenseCategories(); track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-date">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [value]="entry.date" (change)="updateEntryDate(entry.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="entry-amount">
+          <mat-label>Amount</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            inputmode="decimal"
+            [value]="entry.amount || ''"
+            (change)="updateEntryAmount(entry.id, $any($event.target).value)"
+          />
+        </mat-form-field>
+        <button mat-icon-button (click)="removeEntry(entry.id)" aria-label="Remove">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    } @empty {
+      <div class="tiny muted">No outgoings yet.</div>
     }
   </div>
 </div>

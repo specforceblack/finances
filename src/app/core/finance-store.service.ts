@@ -72,22 +72,58 @@ export class FinanceStoreService {
   private load(): FinanceState {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return { ...defaultState(), ...JSON.parse(raw) };
+      if (raw) return this.migrate({ ...defaultState(), ...JSON.parse(raw) });
     } catch {
       /* fall through to defaults */
     }
     return defaultState();
   }
 
+  /** Backfills entries saved before id/name/date existed on Entry (single amount-per-category model). */
+  private migrate(state: FinanceState): FinanceState {
+    const fixMonths = (months: Record<string, MonthData>): Record<string, MonthData> =>
+      Object.fromEntries(
+        Object.entries(months).map(([key, month]) => [
+          key,
+          {
+            key,
+            entries: month.entries.map((e) => ({
+              id: e.id ?? crypto.randomUUID(),
+              name: e.name ?? '',
+              categoryId: e.categoryId,
+              date: e.date ?? `${key}-01`,
+              amount: e.amount,
+            })),
+          },
+        ]),
+      );
+    return { ...state, actuals: fixMonths(state.actuals), forecast: fixMonths(state.forecast) };
+  }
+
   getMonth(section: FinanceSection, key: string): MonthData {
     return this.state()[section][key] ?? emptyMonth(key);
   }
 
-  setEntryAmount(section: FinanceSection, monthKey: string, categoryId: string, amount: number): void {
+  addEntry(section: FinanceSection, monthKey: string, entry: Omit<Entry, 'id'>): void {
     this.state.update((s) => {
       const month = s[section][monthKey] ?? emptyMonth(monthKey);
-      const entries = month.entries.filter((e) => e.categoryId !== categoryId);
-      entries.push({ categoryId, amount });
+      const entries = [...month.entries, { ...entry, id: crypto.randomUUID() }];
+      return { ...s, [section]: { ...s[section], [monthKey]: { key: monthKey, entries } } };
+    });
+  }
+
+  updateEntry(section: FinanceSection, monthKey: string, entryId: string, patch: Partial<Omit<Entry, 'id'>>): void {
+    this.state.update((s) => {
+      const month = s[section][monthKey] ?? emptyMonth(monthKey);
+      const entries = month.entries.map((e) => (e.id === entryId ? { ...e, ...patch } : e));
+      return { ...s, [section]: { ...s[section], [monthKey]: { key: monthKey, entries } } };
+    });
+  }
+
+  removeEntry(section: FinanceSection, monthKey: string, entryId: string): void {
+    this.state.update((s) => {
+      const month = s[section][monthKey] ?? emptyMonth(monthKey);
+      const entries = month.entries.filter((e) => e.id !== entryId);
       return { ...s, [section]: { ...s[section], [monthKey]: { key: monthKey, entries } } };
     });
   }
@@ -97,7 +133,10 @@ export class FinanceStoreService {
     if (!from.entries.length) return;
     this.state.update((s) => ({
       ...s,
-      [toSection]: { ...s[toSection], [toKey]: { key: toKey, entries: from.entries.map((e) => ({ ...e })) } },
+      [toSection]: {
+        ...s[toSection],
+        [toKey]: { key: toKey, entries: from.entries.map((e) => ({ ...e, id: crypto.randomUUID(), date: toKey + e.date.slice(7) })) },
+      },
     }));
   }
 

@@ -10,7 +10,10 @@ export interface Category {
 }
 
 export interface Entry {
+  id: string;
+  name: string;
   categoryId: string;
+  date: string; // 'YYYY-MM-DD'
   amount: number;
 }
 

@@ -1,3 +1,27 @@
 :host {
   display: block;
 }
+
+.entry-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    margin-bottom: -1.25em;
+  }
+}
+
+.entry-name {
+  flex: 2 1 140px;
+}
+.entry-type {
+  flex: 1 1 120px;
+}
+.entry-date {
+  flex: 1 1 130px;
+}
+.entry-amount {
+  flex: 1 1 90px;
+}
