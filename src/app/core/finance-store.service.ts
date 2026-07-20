@@ -5,6 +5,7 @@ import {
   Entry,
   FinanceSection,
   FinanceState,
+  HouseCost,
   MonthData,
   MonthTotals,
 } from './models';
@@ -43,7 +44,11 @@ function defaultState(): FinanceState {
       depositTargetPct: 10,
       mortgageRateApr: 4.5,
       termYears: 25,
-      maxComfortablePayment: 0,
+      extraCosts: [
+        { id: crypto.randomUUID(), name: 'Home insurance', amount: 0 },
+        { id: crypto.randomUUID(), name: 'Council tax', amount: 0 },
+        { id: crypto.randomUUID(), name: 'Maintenance & repairs', amount: 0 },
+      ],
     },
   };
 }
@@ -98,7 +103,13 @@ export class FinanceStoreService {
           },
         ]),
       );
-    return { ...state, actuals: fixMonths(state.actuals), forecast: fixMonths(state.forecast) };
+    const extraCosts = state.houseTarget.extraCosts ?? [];
+    return {
+      ...state,
+      actuals: fixMonths(state.actuals),
+      forecast: fixMonths(state.forecast),
+      houseTarget: { ...state.houseTarget, extraCosts },
+    };
   }
 
   getMonth(section: FinanceSection, key: string): MonthData {
@@ -161,6 +172,33 @@ export class FinanceStoreService {
 
   updateHouseTarget(patch: Partial<FinanceState['houseTarget']>): void {
     this.state.update((s) => ({ ...s, houseTarget: { ...s.houseTarget, ...patch } }));
+  }
+
+  addHouseCost(name: string): void {
+    this.state.update((s) => ({
+      ...s,
+      houseTarget: {
+        ...s.houseTarget,
+        extraCosts: [...s.houseTarget.extraCosts, { id: crypto.randomUUID(), name, amount: 0 }],
+      },
+    }));
+  }
+
+  updateHouseCost(id: string, patch: Partial<Pick<HouseCost, 'name' | 'amount'>>): void {
+    this.state.update((s) => ({
+      ...s,
+      houseTarget: {
+        ...s.houseTarget,
+        extraCosts: s.houseTarget.extraCosts.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+      },
+    }));
+  }
+
+  removeHouseCost(id: string): void {
+    this.state.update((s) => ({
+      ...s,
+      houseTarget: { ...s.houseTarget, extraCosts: s.houseTarget.extraCosts.filter((c) => c.id !== id) },
+    }));
   }
 
   monthTotals(month: MonthData): MonthTotals {

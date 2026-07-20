@@ -29,6 +29,7 @@ const ROLLING_MONTHS = 12;
     FinanceMonthComponent,
   ],
   templateUrl: './forecast.html',
+  styleUrl: './forecast.scss',
 })
 export class Forecast {
   private readonly store = inject(FinanceStoreService);
@@ -62,11 +63,10 @@ export class Forecast {
     this.rollingMonths.map((key) => this.store.monthTotals(this.store.getMonth('forecast', key)).net),
   );
 
-  readonly avgMonthlyNet = computed(() => {
-    const nets = this.monthlyNets();
-    const sum = nets.reduce((a, b) => a + b, 0);
-    return nets.length ? sum / nets.length : 0;
-  });
+  /** Net left over from the selected forecast month's own bills — the "before housing" baseline. */
+  readonly selectedMonthNet = computed(
+    () => this.store.monthTotals(this.store.getMonth('forecast', this.selectedMonth())).net,
+  );
 
   readonly cumulativeChart = computed<ChartConfiguration<'line'>['data']>(() => {
     let running = 0;
@@ -97,7 +97,7 @@ export class Forecast {
   readonly requiredDeposit = computed(() => this.houseTarget().targetPrice * (this.houseTarget().depositTargetPct / 100));
   readonly depositShortfall = computed(() => Math.max(0, this.requiredDeposit() - this.houseTarget().depositSaved));
   readonly monthsToTarget = computed(() => {
-    const net = this.avgMonthlyNet();
+    const net = this.selectedMonthNet();
     if (net <= 0) return null;
     return Math.ceil(this.depositShortfall() / net);
   });
@@ -114,9 +114,25 @@ export class Forecast {
     return (loan * r * factor) / (factor - 1);
   });
 
-  readonly affordable = computed(() => {
-    const cap = this.houseTarget().maxComfortablePayment;
-    if (cap > 0) return this.monthlyMortgage() <= cap;
-    return this.monthlyMortgage() <= this.avgMonthlyNet();
-  });
+  readonly extraCosts = computed(() => this.houseTarget().extraCosts);
+  readonly totalExtraCosts = computed(() => this.extraCosts().reduce((sum, c) => sum + c.amount, 0));
+
+  /** What's left each month once you're a homeowner: this month's net minus the mortgage minus new homeowner costs. */
+  readonly spareCash = computed(() => this.selectedMonthNet() - this.monthlyMortgage() - this.totalExtraCosts());
+
+  addHouseCost(): void {
+    this.store.addHouseCost('');
+  }
+
+  updateHouseCostName(id: string, name: string): void {
+    this.store.updateHouseCost(id, { name });
+  }
+
+  updateHouseCostAmount(id: string, value: string): void {
+    this.store.updateHouseCost(id, { amount: Math.max(0, Number(value) || 0) });
+  }
+
+  removeHouseCost(id: string): void {
+    this.store.removeHouseCost(id);
+  }
 }

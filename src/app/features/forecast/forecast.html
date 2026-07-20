@@ -58,11 +58,6 @@
         <input matInput type="number" min="1" [value]="houseTarget().termYears || ''"
           (change)="updateTarget('termYears', $any($event.target).value)" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Max comfortable payment (optional)</mat-label>
-        <input matInput type="number" min="0" [value]="houseTarget().maxComfortablePayment || ''"
-          (change)="updateTarget('maxComfortablePayment', $any($event.target).value)" />
-      </mat-form-field>
     </div>
 
     <div class="metric-tiles" style="margin-top: 8px">
@@ -79,24 +74,54 @@
         <div class="metric-label">Months to deposit target</div>
       </div>
       <div class="metric-card">
-        <div class="big">{{ monthlyMortgage() | number: '1.0-0' }}</div>
+        <div class="big">{{ selectedMonthNet() | number: '1.0-0' }}</div>
+        <div class="metric-label">This month's net (before housing)</div>
+      </div>
+      <div class="metric-card">
+        <div class="big neg">{{ monthlyMortgage() | number: '1.0-0' }}</div>
         <div class="metric-label">Est. monthly mortgage</div>
       </div>
       <div class="metric-card">
-        <div class="big">{{ avgMonthlyNet() | number: '1.0-0' }}</div>
-        <div class="metric-label">Avg. forecast net/month</div>
-      </div>
-      <div class="metric-card">
-        <div class="big" [class.pos]="affordable()" [class.neg]="!affordable()">
-          {{ affordable() ? 'Looks affordable' : 'Over budget' }}
-        </div>
-        <div class="metric-label">Verdict</div>
+        <div class="big neg">{{ totalExtraCosts() | number: '1.0-0' }}</div>
+        <div class="metric-label">Extra homeowner costs</div>
       </div>
     </div>
 
-    <div class="tiny muted" style="margin-top: 8px">
+    <div class="strong" style="margin: 20px 0 4px">Extra costs as a homeowner</div>
+    <div class="tiny muted" style="margin-bottom: 8px">
+      Bills you don't pay yet but likely would once you own the house — insurance, council tax, maintenance, etc.
+    </div>
+    @for (cost of extraCosts(); track cost.id) {
+      <div class="cost-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Name</mat-label>
+          <input matInput [value]="cost.name" (change)="updateHouseCostName(cost.id, $any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Monthly amount</mat-label>
+          <input matInput type="number" min="0" [value]="cost.amount || ''"
+            (change)="updateHouseCostAmount(cost.id, $any($event.target).value)" />
+        </mat-form-field>
+        <button mat-icon-button (click)="removeHouseCost(cost.id)" aria-label="Remove">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+    <button mat-stroked-button (click)="addHouseCost()" style="margin-top: 4px">
+      <mat-icon>add</mat-icon>
+      Add cost
+    </button>
+
+    <div class="card spare-cash" style="margin-top: 20px">
+      <div class="big" [class.pos]="spareCash() >= 0" [class.neg]="spareCash() < 0" style="font-size: 32px">
+        {{ spareCash() | number: '1.0-0' }}
+      </div>
+      <div class="metric-label">Spare cash left each month, after mortgage &amp; new homeowner costs</div>
+    </div>
+
+    <div class="tiny muted" style="margin-top: 12px">
       Rough planning estimate only — not financial or mortgage advice. Mortgage payment uses a standard repayment
-      formula and doesn't account for fees, insurance, or rate changes.
+      formula and doesn't account for fees, arrangement costs, or rate changes.
     </div>
   </div>
 </div>

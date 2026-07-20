@@ -22,13 +22,19 @@ export interface MonthData {
   entries: Entry[];
 }
 
+export interface HouseCost {
+  id: string;
+  name: string;
+  amount: number;
+}
+
 export interface HouseTarget {
   targetPrice: number;
   depositSaved: number;
   depositTargetPct: number;
   mortgageRateApr: number;
   termYears: number;
-  maxComfortablePayment: number;
+  extraCosts: HouseCost[];
 }
 
 export interface FinanceState {
